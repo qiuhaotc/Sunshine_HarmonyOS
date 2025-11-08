@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "ShiningAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "ShiningAbility_label",
+      "value": "房屋光照计算器"
+    }
+  ]
+}

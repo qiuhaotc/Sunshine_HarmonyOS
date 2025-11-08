@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "D:/Code/HarmonyOS/SignedInfo/store.p12",
+          "storePassword": "00000038154AB970431D7BC6D3A7860FC78FD71D0F285C19564940391738D701557EACC91175233044D1A66B3E054D8F3D161FEBCA8DD51AFDEE63673BB3EF55AD826077774228CC",
+          "keyAlias": "sunshine",
+          "keyPassword": "00000038590927FDE09A0126FCBF12DD75D138EB5ED237C25EBA42C8C19A1CA6D25475377DB955F1F6F521D0870A700443F8F6062B3912B318D39465323A0978E75BDA510415575E",
+          "signAlg": "SHA256withECDSA",
+          "profile": "D:/Code/HarmonyOS/SignedInfo/SunshineRelease.p7b",
+          "certpath": "D:/Code/HarmonyOS/SignedInfo/sunshine.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

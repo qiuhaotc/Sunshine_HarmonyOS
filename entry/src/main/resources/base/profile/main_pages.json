@@ -1,0 +1,10 @@
+{
+  "src": [
+    "pages/LauncherPage",
+    "pages/PrivacyPage",
+    "pages/Index",
+    "pages/SimpleCalculator",
+    "pages/AdvancedCalculator",
+    "pages/AboutPage"
+  ]
+}

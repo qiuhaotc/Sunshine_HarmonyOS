@@ -1,0 +1,53 @@
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "ShiningAbility",
+    "deviceTypes": [
+      "phone",
+      "tablet",
+      "2in1",
+      "tv"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "ShiningAbility",
+        "srcEntry": "./ets/shiningability/ShiningAbility.ets",
+        "description": "$string:ShiningAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:ShiningAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "ohos.want.action.home"
+            ]
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        "name": "ShiningBackupAbility",
+        "srcEntry": "./ets/shiningbackupability/ShiningBackupAbility.ets",
+        "type": "backup",
+        "exported": false,
+        "metadata": [
+          {
+            "name": "ohos.extension.backup",
+            "resource": "$profile:backup_config"
+          }
+        ],
+      }
+    ]
+  }
+}
