@@ -614,6 +614,7 @@ struct AdvancedCalculatorPage {
         Row() {
           Text(this.activeUnitView === 'table' ? '单元日照表' : '3D热力图')
             .fontSize(20)
+            .fontColor(Color.White)
             .fontWeight(FontWeight.Bold)
             .layoutWeight(1)
 

@@ -1,5 +1,5 @@
 /**
- * 主页面 - 房屋光照计算器
+ * 主页面 - 房屋房屋光照助手
  */
 @Entry
 @Component
@@ -10,7 +10,7 @@ struct Index {
     Column() {
       // 标题
       Row() {
-        Text('房屋光照计算器')
+        Text('房屋房屋光照助手')
           .fontSize(28)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
