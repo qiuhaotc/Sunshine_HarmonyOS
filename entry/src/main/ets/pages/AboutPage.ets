@@ -67,7 +67,7 @@ struct AboutPage {
               .borderRadius(20)
               .margin({ top: 30, bottom: 20 })
 
-            Text('房屋房屋光照助手')
+            Text('房屋光照助手')
               .fontSize(24)
               .fontWeight(FontWeight.Bold)
               .margin({ bottom: 10 })

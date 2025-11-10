@@ -32,8 +32,8 @@ export default class ShiningAbility extends UIAbility {
         // Main window is created, set main page for this ability
         hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-        // 首次启动加载启动页(LauncherPage),启动页会检查隐私协议状态
-        windowStage.loadContent('pages/LauncherPage', (err) => {
+        // 暂时直接加载主页面
+        windowStage.loadContent('pages/Index', (err) => {
             if (err.code) {
                 hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
                 return;

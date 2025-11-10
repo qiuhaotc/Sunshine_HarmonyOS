@@ -1,4 +1,4 @@
-# 房屋房屋光照助手 - HarmonyOS版本
+# 房屋光照助手 - HarmonyOS版本
 
 <p align="center">
   <img src="entry/src/main/resources/base/media/startIcon.png" alt="App Icon" width="120"/>

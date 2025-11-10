@@ -27,7 +27,7 @@ export struct PrivacyDialogComponent {
         .margin({ top: 24, bottom: 16 })
 
       // 弹窗内容
-      Text('欢迎使用房屋房屋光照助手！在使用我们的服务前，请您认真阅读并同意以下协议：')
+      Text('欢迎使用房屋光照助手！在使用我们的服务前，请您认真阅读并同意以下协议：')
         .fontSize(14)
         .fontColor($r('app.color.text_primary'))
         .width(CommonConstants.DIALOG_COMPONENT_WIDTH_PERCENT)
