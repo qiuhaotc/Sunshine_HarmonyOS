@@ -20,7 +20,7 @@ export class CommonConstants {
   /**
    * 华为官方隐私政策URL
    */
-  static readonly PRIVACY_AGREEMENT_URL: string = 'https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1814591374691964288';
+  static readonly PRIVACY_AGREEMENT_URL: string = 'https://agreement-drcn.hispace.dbankcloud.cn/index.html?lang=zh&agreementId=1816095413258720640';
 
   /**
    * 启动页URL
