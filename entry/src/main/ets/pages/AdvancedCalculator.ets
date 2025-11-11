@@ -6,6 +6,8 @@ import { Building3DView } from '../components/Building3DView';
 import { UnitSunshineTable } from '../components/UnitSunshineTable';
 import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
+import { SunshineRatingSystem, RatingResult, SpecialDays } from '../utils/SunshineRatingSystem';
+import { SunshineRatingCard } from '../components/SunshineRatingCard';
 import preferences from '@ohos.data.preferences';
 import fs from '@ohos.file.fs';
 import picker from '@ohos.file.picker';
@@ -84,6 +86,7 @@ struct AdvancedCalculatorPage {
   @State showResult: boolean = false;
   @State calculating: boolean = false;
   @State calculationResult: UnitSunshineResult | null = null;
+  @State ratingResult: RatingResult | null = null;
   
   // 城市选择
   @State selectedCity: string = '请选择城市';
@@ -1035,6 +1038,12 @@ struct AdvancedCalculatorPage {
         .fontSize(16)
         .fontWeight(FontWeight.Medium)
         .margin({ top: 15, bottom: 10 })
+
+      // 评分卡片
+      if (this.ratingResult) {
+        SunshineRatingCard({ ratingResult: this.ratingResult })
+          .margin({ bottom: 15 })
+      }
 
       if (this.calculationResult) {
         Column() {
@@ -2480,6 +2489,17 @@ struct AdvancedCalculatorPage {
           5 // 5分钟步长
         );
         
+        // 计算评分 (根据年平均值估算全年总日照)
+        const totalSunshineHours = this.calculationResult.annualAverage * 365;
+        const specialDays: SpecialDays = {
+          dahan: this.calculationResult.greatCold,
+          dongzhi: this.calculationResult.winterSolstice,
+          chunfen: this.calculationResult.springEquinox,
+          xiazhi: this.calculationResult.summerSolstice,
+          qiufen: this.calculationResult.autumnalEquinox
+        };
+        this.ratingResult = SunshineRatingSystem.evaluateAdvanced(totalSunshineHours, specialDays);
+        
         this.showResult = true;
         
         const duration = Date.now() - startTime;
@@ -2570,6 +2590,7 @@ struct AdvancedCalculatorPage {
           data.autumnEquinoxSunshine = calcResult.autumnalEquinox;
           data.winterSolsticeSunshine = calcResult.winterSolstice;
           data.greatColdSunshine = calcResult.greatCold;
+          data.averageDailySunshine = calcResult.annualAverage;  // 年均每日日照
           data.totalSunshineHours = calcResult.annualAverage * 365;  // 年均日照*365天
           
           resultData.push(data);

@@ -16,6 +16,7 @@ export class UnitSunshineData {
   summerSolsticeSunshine: number = 0;
   autumnEquinoxSunshine: number = 0;
   greatColdSunshine: number = 0;
+  averageDailySunshine: number = 0; // 年均每日日照时长(小时)
   
   /**
    * 获取热力图颜色(根据日照时长)

@@ -3,6 +3,8 @@ import { HouseSunshineModel } from '../model/HouseSunshineModel';
 import { SimpleSunshineCalculator } from '../calculator/SimpleSunshineCalculator';
 import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
+import { SunshineRatingSystem, RatingResult } from '../utils/SunshineRatingSystem';
+import { SunshineRatingCard } from '../components/SunshineRatingCard';
 import router from '@ohos.router';
 import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
@@ -19,6 +21,7 @@ struct SimpleCalculatorPage {
   @State showResult: boolean = false;
   @State selectedCity: string = '请选择城市';
   @State cities: CityModel[] = [];
+  @State ratingResult: RatingResult | null = null;
   
   // 为每个输入字段维护显示字符串
   @State longitudeText: string = '';
@@ -568,6 +571,12 @@ struct SimpleCalculatorPage {
         .margin({ top: 30, bottom: 15 })
         .alignSelf(ItemAlign.Start)
 
+      // 评分卡片
+      if (this.ratingResult) {
+        SunshineRatingCard({ ratingResult: this.ratingResult })
+          .margin({ bottom: 20 })
+      }
+
       Column() {
         this.buildResultRow('全年总日照时间', this.result.formatMinutesToHours(this.result.totalSunshineTime) + ' 小时')
         this.buildResultRow('全年有效日照时间', this.result.formatMinutesToHours(this.result.exactSunshineTime) + ' 小时')
@@ -670,6 +679,15 @@ struct SimpleCalculatorPage {
       try {
         // 使用1分钟步长进行精确计算
         this.result = this.calculator.calculateHouseSunshine(this.inputModel, 1);
+        
+        // 计算评分 (将分钟转换为小时)
+        this.ratingResult = SunshineRatingSystem.evaluateSimple(
+          this.result.exactSunshineTime / 60, // 全年总日照(小时)
+          this.result.greatCold / 60, // 大寒(小时)
+          this.result.winterSolstice / 60, // 冬至(小时)
+          this.result.exactSunshineTime / 60 / 365 // 年平均每日(小时)
+        );
+        
         this.showResult = true;
         
         const duration = Date.now() - startTime;

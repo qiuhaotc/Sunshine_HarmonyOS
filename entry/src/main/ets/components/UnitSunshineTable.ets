@@ -1,4 +1,6 @@
 import { UnitSunshineData } from '../model/UnitSunshineData';
+import { SunshineRatingSystem, RatingResult } from '../utils/SunshineRatingSystem';
+import { SunshineRatingCard } from './SunshineRatingCard';
 
 /**
  * Select 组件选项接口
@@ -15,8 +17,13 @@ export struct UnitSunshineTable {
   @Link sunshineData: UnitSunshineData[];
   @State selectedFloor: number = -1; // -1表示显示所有楼层
   @State selectedUnit: number = -1; // -1表示显示所有单元
-  @State sortBy: 'floor' | 'sunshine' = 'floor';
+  @State sortBy: 'floor' | 'sunshine' | 'rating' = 'floor';
   @State sortAscending: boolean = true;
+  @State selectedRating: RatingResult | null = null;
+  @State showRatingDialog: boolean = false;
+  
+  // 评分对话框控制器
+  private ratingDialogController: CustomDialogController | null = null;
 
   build() {
     Column() {
@@ -82,39 +89,46 @@ export struct UnitSunshineTable {
         // 表格头部
         Row() {
           Text('楼层')
-            .width('15%')
+            .width('12%')
             .fontSize(13)
             .fontWeight(FontWeight.Medium)
             .textAlign(TextAlign.Center)
             .onClick(() => this.sort('floor'))
 
           Text('单元')
-            .width('15%')
+            .width('12%')
             .fontSize(13)
             .fontWeight(FontWeight.Medium)
             .textAlign(TextAlign.Center)
 
           Text('冬至')
-            .width('25%')
+            .width('15%')
             .fontSize(13)
             .fontWeight(FontWeight.Medium)
             .textAlign(TextAlign.Center)
             .onClick(() => this.sort('sunshine'))
 
           Text('大寒')
-            .width('20%')
-            .fontSize(13)
-            .fontWeight(FontWeight.Medium)
-            .textAlign(TextAlign.Center)
-
-          Text('年度总时')
             .width('15%')
             .fontSize(13)
             .fontWeight(FontWeight.Medium)
             .textAlign(TextAlign.Center)
 
+          Text('年均')
+            .width('13%')
+            .fontSize(13)
+            .fontWeight(FontWeight.Medium)
+            .textAlign(TextAlign.Center)
+
+          Text('评分')
+            .width('18%')
+            .fontSize(13)
+            .fontWeight(FontWeight.Medium)
+            .textAlign(TextAlign.Center)
+            .onClick(() => this.sort('rating'))
+
           Text('状态')
-            .width('10%')
+            .width('15%')
             .fontSize(13)
             .fontWeight(FontWeight.Medium)
             .textAlign(TextAlign.Center)
@@ -151,33 +165,49 @@ export struct UnitSunshineTable {
   buildTableRow(item: UnitSunshineData, index: number) {
     Row() {
       Text(`${item.floor}F`)
-        .width('15%')
+        .width('12%')
         .fontSize(12)
         .textAlign(TextAlign.Center)
 
       Text(`${item.unitIndex + 1}`)
-        .width('15%')
+        .width('12%')
         .fontSize(12)
         .textAlign(TextAlign.Center)
 
       Text(`${item.winterSolsticeSunshine.toFixed(1)}h`)
-        .width('25%')
+        .width('15%')
         .fontSize(12)
         .textAlign(TextAlign.Center)
         .fontColor(item.winterSolsticeSunshine >= 2 ? Color.Green : Color.Red)
 
       Text(`${item.greatColdSunshine.toFixed(1)}h`)
-        .width('20%')
-        .fontSize(12)
-        .textAlign(TextAlign.Center)
-
-      Text(`${item.totalSunshineHours.toFixed(0)}h`)
         .width('15%')
         .fontSize(12)
         .textAlign(TextAlign.Center)
 
+      Text(`${item.averageDailySunshine.toFixed(1)}h`)
+        .width('13%')
+        .fontSize(12)
+        .textAlign(TextAlign.Center)
+
+      // 评分列 - 可点击查看详情
+      Row() {
+        Text(this.getRatingBadge(item))
+          .fontSize(11)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(Color.White)
+          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+          .backgroundColor(this.getRatingColor(item))
+          .borderRadius(3)
+      }
+      .width('18%')
+      .justifyContent(FlexAlign.Center)
+      .onClick(() => {
+        this.showUnitRatingDetail(item);
+      })
+
       Text(item.meetsStandard() ? '✓' : '✗')
-        .width('10%')
+        .width('15%')
         .fontSize(14)
         .textAlign(TextAlign.Center)
         .fontColor(item.meetsStandard() ? Color.Green : Color.Red)
@@ -324,8 +354,13 @@ export struct UnitSunshineTable {
       
       if (this.sortBy === 'floor') {
         compareValue = a.floor - b.floor || a.unitIndex - b.unitIndex;
-      } else {
+      } else if (this.sortBy === 'sunshine') {
         compareValue = a.winterSolsticeSunshine - b.winterSolsticeSunshine;
+      } else if (this.sortBy === 'rating') {
+        // 按评分排序
+        const ratingA = this.calculateRating(a);
+        const ratingB = this.calculateRating(b);
+        compareValue = ratingA.score - ratingB.score;
       }
 
       return this.sortAscending ? compareValue : -compareValue;
@@ -337,7 +372,7 @@ export struct UnitSunshineTable {
   /**
    * 排序
    */
-  private sort(by: 'floor' | 'sunshine') {
+  private sort(by: 'floor' | 'sunshine' | 'rating') {
     if (this.sortBy === by) {
       this.sortAscending = !this.sortAscending;
     } else {
@@ -371,4 +406,155 @@ export struct UnitSunshineTable {
     return (total / this.sunshineData.length).toFixed(1);
   }
 
+  /**
+   * 计算单元的评分
+   */
+  private calculateRating(item: UnitSunshineData): RatingResult {
+    return SunshineRatingSystem.evaluateAdvanced(
+      item.totalSunshineHours,
+      {
+        dahan: item.greatColdSunshine,
+        dongzhi: item.winterSolsticeSunshine,
+        chunfen: item.springEquinoxSunshine,
+        xiazhi: item.summerSolsticeSunshine,
+        qiufen: item.autumnEquinoxSunshine
+      }
+    );
+  }
+
+  /**
+   * 获取评分徽章文本
+   */
+  private getRatingBadge(item: UnitSunshineData): string {
+    const rating = this.calculateRating(item);
+    return `${rating.score}分`;
+  }
+
+  /**
+   * 获取评分颜色
+   */
+  private getRatingColor(item: UnitSunshineData): string {
+    const rating = this.calculateRating(item);
+    return rating.color;
+  }
+
+  /**
+   * 显示单元评分详情
+   */
+  private showUnitRatingDetail(item: UnitSunshineData) {
+    const rating = this.calculateRating(item);
+    this.selectedRating = rating;
+    
+    // 创建并显示对话框
+    this.ratingDialogController = new CustomDialogController({
+      builder: UnitRatingDialog({
+        unitData: item,
+        ratingResult: rating,
+        onClose: () => {
+          this.ratingDialogController?.close();
+        }
+      }),
+      autoCancel: true,
+      alignment: DialogAlignment.Center,
+      customStyle: true
+    });
+    
+    this.ratingDialogController.open();
+  }
+}
+
+/**
+ * 单元评分详情对话框
+ */
+@CustomDialog
+struct UnitRatingDialog {
+  unitData: UnitSunshineData = new UnitSunshineData();
+  ratingResult: RatingResult | null = null;
+  onClose?: () => void;
+  controller?: CustomDialogController;
+
+  build() {
+    Column() {
+      // 标题
+      Row() {
+        Text(`${this.unitData.buildingId}号楼 ${this.unitData.floor}F-${this.unitData.unitIndex + 1}单元`)
+          .fontSize(18)
+          .fontWeight(FontWeight.Bold)
+          .layoutWeight(1)
+        
+        Button('✕')
+          .width(32)
+          .height(32)
+          .backgroundColor(Color.Transparent)
+          .fontColor($r('app.color.text_secondary'))
+          .onClick(() => {
+            if (this.onClose) {
+              this.onClose();
+            }
+          })
+      }
+      .width('100%')
+      .margin({ bottom: 20 })
+
+      // 评分卡片
+      if (this.ratingResult) {
+        SunshineRatingCard({ ratingResult: this.ratingResult })
+      }
+
+      // 详细数据
+      Column() {
+        Text('详细数据')
+          .fontSize(16)
+          .fontWeight(FontWeight.Medium)
+          .margin({ top: 20, bottom: 10 })
+          .alignSelf(ItemAlign.Start)
+
+        Column() {
+          this.buildDataRow('春分日照', `${this.unitData.springEquinoxSunshine.toFixed(2)}小时`)
+          this.buildDataRow('夏至日照', `${this.unitData.summerSolsticeSunshine.toFixed(2)}小时`)
+          this.buildDataRow('秋分日照', `${this.unitData.autumnEquinoxSunshine.toFixed(2)}小时`)
+          this.buildDataRow('冬至日照', `${this.unitData.winterSolsticeSunshine.toFixed(2)}小时`)
+          this.buildDataRow('大寒日照', `${this.unitData.greatColdSunshine.toFixed(2)}小时`)
+          Divider().margin({ top: 8, bottom: 8 })
+          this.buildDataRow('年均日照', `${this.unitData.averageDailySunshine.toFixed(2)}小时/天`, true)
+          this.buildDataRow('全年总计', `${this.unitData.totalSunshineHours.toFixed(0)}小时`, true)
+        }
+        .width('100%')
+        .padding(15)
+        .backgroundColor($r('app.color.input_background'))
+        .borderRadius(8)
+      }
+      .width('100%')
+    }
+    .width('90%')
+    .constraintSize({ maxWidth: 500 })
+    .padding(20)
+    .backgroundColor(Color.White)
+    .borderRadius(16)
+    .shadow({
+      radius: 20,
+      color: '#00000030',
+      offsetX: 0,
+      offsetY: 4
+    })
+  }
+
+  @Builder
+  buildDataRow(label: string, value: string, highlight: boolean = false) {
+    Row() {
+      Text(label)
+        .fontSize(14)
+        .fontColor($r('app.color.text_secondary'))
+        .width('50%')
+      
+      Text(value)
+        .fontSize(14)
+        .fontWeight(highlight ? FontWeight.Bold : FontWeight.Normal)
+        .fontColor(highlight ? '#FF6B00' : $r('app.color.text_primary'))
+        .width('50%')
+        .textAlign(TextAlign.End)
+    }
+    .width('100%')
+    .margin({ bottom: 5 })
+  }
 }
