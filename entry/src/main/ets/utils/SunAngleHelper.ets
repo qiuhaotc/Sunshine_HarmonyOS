@@ -166,7 +166,7 @@ export class SunAngleHelper {
   }
 
   /**
-   * 简化的太阳位置计算(用于高级计算器)
+   * 简化的太阳位置计算(用于高级评估器)
    * @param latitude 纬度
    * @param longitude 经度
    * @param dayOfYear 一年中的第几天(1-365)

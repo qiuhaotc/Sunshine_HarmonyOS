@@ -8,7 +8,7 @@ import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
 
 /**
- * 简单光照计算器页面
+ * 简单日照评估器页面
  */
 @Entry
 @Component
@@ -164,7 +164,7 @@ struct SimpleCalculatorPage {
           })
           .margin({ left: 8 })
 
-          Text('基础光照计算器')
+          Text('基础日照评估器')
             .fontSize(20)
             .fontWeight(FontWeight.Medium)
             .fontColor(Color.White)
@@ -220,7 +220,7 @@ struct SimpleCalculatorPage {
           .color($r('app.color.link_color'))
           .margin({ bottom: 20 })
         
-        Text('正在计算光照时间...')
+        Text('正在计算日照时间...')
           .fontSize(16)
           .fontColor($r('app.color.text_primary'))
           .margin({ bottom: 10 })
@@ -256,7 +256,7 @@ struct SimpleCalculatorPage {
       this.buildInputSection()
 
       // 计算按钮
-      Button('计算光照时间')
+      Button('计算日照时间')
         .width('90%')
         .height(50)
         .margin({ top: 30 })
@@ -285,7 +285,7 @@ struct SimpleCalculatorPage {
         this.buildInputSection()
         
         // 计算按钮
-        Button('计算光照时间')
+        Button('计算日照时间')
           .width('80%')
           .height(50)
           .margin({ top: 30 })
@@ -654,7 +654,7 @@ struct SimpleCalculatorPage {
   }
 
   /**
-   * 计算光照
+   * 计算日照
    */
   private calculateSunshine() {
     // 在计算前,确保从界面文本同步所有值到 inputModel
@@ -676,7 +676,7 @@ struct SimpleCalculatorPage {
         console.info(`计算完成,耗时: ${duration}ms, 步长: 1分钟, ` +
                      `经度: ${this.inputModel.longitude}, 纬度: ${this.inputModel.latitude}`);
       } catch (error) {
-        console.error('计算光照时出错:', error);
+        console.error('计算日照时出错:', error);
         // TODO: 显示错误提示
       } finally {
         this.calculating = false;

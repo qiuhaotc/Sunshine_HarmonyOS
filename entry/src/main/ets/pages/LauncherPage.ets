@@ -158,7 +158,7 @@ struct LauncherPage {
           .margin({ top: 120 })
 
         // 应用名称
-        Text('房屋光照助手')
+        Text('房屋日照助手')
           .fontSize(32)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)

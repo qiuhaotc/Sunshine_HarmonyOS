@@ -70,7 +70,7 @@ interface Point2D {
 }
 
 /**
- * 高级光照计算器页面
+ * 高级日照评估器页面
  */
 @Entry
 @Component
@@ -319,7 +319,7 @@ struct AdvancedCalculatorPage {
           })
           .margin({ left: 8 })
 
-          Text('高级光照计算器')
+          Text('高级日照评估器')
             .fontSize(this.isSmallScreen ? 18 : 20)
             .fontWeight(FontWeight.Medium)
             .fontColor(Color.White)
@@ -559,7 +559,7 @@ struct AdvancedCalculatorPage {
           .color($r('sys.color.ohos_id_color_emphasize'))
           .margin({ bottom: 20 })
         
-        Text(this.calculationProgress || '正在计算光照时间...')
+        Text(this.calculationProgress || '正在计算日照时间...')
           .fontSize(16)
           .fontColor($r('app.color.text_primary'))
           .margin({ bottom: 10 })
@@ -917,7 +917,7 @@ struct AdvancedCalculatorPage {
   @Builder
   buildCalculationPanel() {
     Column() {
-      Text('光照计算')
+      Text('日照计算')
         .fontSize(18)
         .fontWeight(FontWeight.Medium)
         .margin({ bottom: 10 })
@@ -1010,7 +1010,7 @@ struct AdvancedCalculatorPage {
       .width('100%')
       .margin({ bottom: 15 })
 
-      Button('计算光照')
+      Button('计算日照')
         .width('100%')
         .enabled(!this.calculating)
         .onClick(() => {
@@ -2432,7 +2432,7 @@ struct AdvancedCalculatorPage {
   }
 
   /**
-   * 计算光照
+   * 计算日照
    */
   private calculateSunshine() {
     // 验证输入
@@ -2468,7 +2468,7 @@ struct AdvancedCalculatorPage {
     setTimeout(() => {
       const startTime = Date.now();
       try {
-        // 调用高级计算器
+        // 调用高级评估器
         this.calculationResult = this.calculator.calculateUnitSunshine(
           this.buildings,
           targetBuilding,
@@ -2490,7 +2490,7 @@ struct AdvancedCalculatorPage {
                      `冬至=${this.calculationResult.winterSolstice.toFixed(2)}h, ` +
                      `年均=${this.calculationResult.annualAverage.toFixed(2)}h/天`);
       } catch (error) {
-        console.error('计算光照时出错:', JSON.stringify(error));
+        console.error('计算日照时出错:', JSON.stringify(error));
       } finally {
         this.calculating = false;
       }
@@ -2564,7 +2564,7 @@ struct AdvancedCalculatorPage {
           data.y = targetBuilding.y + targetBuilding.length / 2;
           data.z = (currentFloor - 0.5) * targetBuilding.floorHeight;
           
-          // 设置日照数据（与计算光照输出保持一致）
+          // 设置日照数据（与计算日照输出保持一致）
           data.springEquinoxSunshine = calcResult.springEquinox;
           data.summerSolsticeSunshine = calcResult.summerSolstice;
           data.autumnEquinoxSunshine = calcResult.autumnalEquinox;

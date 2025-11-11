@@ -1,20 +1,20 @@
 /**
- * 房屋光照结果模型
+ * 房屋日照结果模型
  */
 export class HouseSunshineModel {
-  // 总光照时间(分钟)
+  // 总日照时间(分钟)
   totalSunshineTime: number = 0;
-  // 精确光照时间(分钟)
+  // 精确日照时间(分钟)
   exactSunshineTime: number = 0;
-  // 春分光照时间(分钟)
+  // 春分日照时间(分钟)
   springEquinox: number = 0;
-  // 夏至光照时间(分钟)
+  // 夏至日照时间(分钟)
   summerSolstice: number = 0;
-  // 秋分光照时间(分钟)
+  // 秋分日照时间(分钟)
   autumnalEquinox: number = 0;
-  // 冬至光照时间(分钟)
+  // 冬至日照时间(分钟)
   winterSolstice: number = 0;
-  // 大寒光照时间(分钟)
+  // 大寒日照时间(分钟)
   greatCold: number = 0;
 
   /**
@@ -25,7 +25,7 @@ export class HouseSunshineModel {
   }
 
   /**
-   * 获取光照百分比
+   * 获取日照百分比
    */
   getSunshinePercent(): string {
     if (this.totalSunshineTime === 0) {

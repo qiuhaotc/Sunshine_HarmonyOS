@@ -4,8 +4,8 @@ import { SunAngleHelper } from '../utils/SunAngleHelper';
 import { SunPosition } from '../model/SunPosition';
 
 /**
- * 高级光照计算器
- * 用于计算复杂场景下的房屋光照情况(考虑多个建筑物的遮挡)
+ * 高级日照评估器
+ * 用于评估复杂场景下的房屋日照情况(考虑多个建筑物的遮挡)
  * 模仿JS实现: https://github.com/qiuhaotc/Sunshine/blob/main/Sunshine.Server/wwwroot/js/advancedCalculator.js
  */
 export class AdvancedSunshineCalculator {
@@ -16,7 +16,7 @@ export class AdvancedSunshineCalculator {
   }
 
   /**
-   * 计算特定单元的全年光照时间
+   * 计算特定单元的全年日照时间
    * @param buildings 所有建筑物
    * @param targetBuilding 目标建筑物
    * @param floorIndex 楼层索引(从1开始)
@@ -25,7 +25,7 @@ export class AdvancedSunshineCalculator {
    * @param longitude 经度
    * @param scaleMetersPerCell 每格代表的米数
    * @param minutesStep 计算步长(分钟)
-   * @returns 光照结果对象
+   * @returns 日照结果对象
    */
   calculateUnitSunshine(
     buildings: BuildingModel[],
@@ -150,7 +150,7 @@ export class AdvancedSunshineCalculator {
   }
 
   /**
-   * 计算某一天的光照时间(分钟)
+   * 计算某一天的日照时间(分钟)
    */
   private computeDaySunshineMinutes(
     buildings: BuildingModel[],
@@ -417,7 +417,7 @@ export class AdvancedSunshineCalculator {
 }
 
 /**
- * 单元光照结果
+ * 单元日照结果
  */
 export interface UnitSunshineResult {
   buildingId: number;

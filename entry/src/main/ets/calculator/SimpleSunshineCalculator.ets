@@ -3,8 +3,8 @@ import { HouseSunshineModel } from '../model/HouseSunshineModel';
 import { SunAngleHelper } from '../utils/SunAngleHelper';
 
 /**
- * 基础光照计算器
- * 用于计算简单场景下的房屋光照情况
+ * 基础日照评估器
+ * 用于评估简单场景下的房屋日照情况
  * 模仿C#实现: https://github.com/qiuhaotc/Sunshine/blob/main/Sunshine.Business/SunshineCalculater.cs
  */
 export class SimpleSunshineCalculator {
@@ -16,10 +16,10 @@ export class SimpleSunshineCalculator {
   }
 
   /**
-   * 计算房屋光照模型 - 模仿C#实现
+   * 计算房屋日照模型 - 模仿C#实现
    * @param houseInput 房屋输入参数
    * @param minutesStep 计算步长(分钟)，默认1分钟
-   * @returns 房屋光照结果
+   * @returns 房屋日照结果
    */
   calculateHouseSunshine(houseInput: HouseInputModel, minutesStep: number = 1): HouseSunshineModel {
     // 确保步长不小于最小值
@@ -129,8 +129,8 @@ export class SimpleSunshineCalculator {
   }
 
   /**
-   * 验证光照结果是否符合标准
-   * @param result 光照结果
+   * 验证日照结果是否符合标准
+   * @param result 日照结果
    * @returns 是否符合标准
    */
   validateSunshineResult(result: HouseSunshineModel): boolean {
@@ -140,7 +140,7 @@ export class SimpleSunshineCalculator {
 
   /**
    * 获取验证结果描述
-   * @param result 光照结果
+   * @param result 日照结果
    * @returns 验证结果描述
    */
   getValidationDescription(result: HouseSunshineModel): string {

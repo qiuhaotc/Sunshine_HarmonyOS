@@ -67,7 +67,7 @@ struct AboutPage {
               .borderRadius(20)
               .margin({ top: 30, bottom: 20 })
 
-            Text('房屋光照助手')
+            Text('房屋日照助手')
               .fontSize(24)
               .fontWeight(FontWeight.Bold)
               .margin({ bottom: 10 })
@@ -86,31 +86,31 @@ struct AboutPage {
               .margin({ bottom: 15 })
               .alignSelf(ItemAlign.Start)
 
-            Text('本应用提供房屋光照时长计算功能，帮助用户评估住宅在不同季节和时间的日照情况。')
+            Text('本应用提供房屋日照时长计算功能，帮助用户评估住宅在不同季节和时间的日照情况。')
               .fontSize(14)
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
               .margin({ bottom: 15 })
 
-            Text('• 基础光照计算器')
+            Text('• 基础日照评估器')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 8 })
               .alignSelf(ItemAlign.Start)
 
-            Text('适用于简单场景，计算单栋建筑遮挡下的房屋光照情况。支持自定义经纬度、楼层高度、遮挡距离等参数。')
+            Text('适用于简单场景，评估单栋建筑遮挡下的房屋日照情况。支持自定义经纬度、楼层高度、遮挡距离等参数。')
               .fontSize(14)
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
               .margin({ bottom: 15 })
 
-            Text('• 高级光照计算器')
+            Text('• 高级日照评估器')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 8 })
               .alignSelf(ItemAlign.Start)
 
-            Text('支持多建筑物布局，提供2D视图和详细的单元光照分析。可以模拟复杂的建筑群布局，计算每个单元在不同节气的光照时长。')
+            Text('支持多建筑物布局，提供2D视图和详细的单元日照分析。可以模拟复杂的建筑群布局，计算每个单元在不同节气的日照时长。')
               .fontSize(14)
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
@@ -137,7 +137,7 @@ struct AboutPage {
             .margin({ bottom: 12 })
             .alignSelf(ItemAlign.Start)
 
-            Text('本应用提供的光照计算结果仅供参考，计算结果可能存在误差。实际光照情况会受到多种因素影响：')
+            Text('本应用提供的日照计算结果仅供参考，计算结果可能存在误差。实际日照情况会受到多种因素影响：')
               .fontSize(14)
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
@@ -153,7 +153,7 @@ struct AboutPage {
               .fontColor($r('app.color.text_secondary'))
               .margin({ bottom: 10 })
 
-            Text('如需精确的光照评估，请咨询专业建筑设计机构或使用专业测量设备。')
+            Text('如需精确的日照评估，请咨询专业建筑设计机构或使用专业测量设备。')
               .fontSize(14)
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))

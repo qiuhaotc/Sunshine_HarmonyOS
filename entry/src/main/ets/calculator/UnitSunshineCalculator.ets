@@ -13,7 +13,7 @@ interface Point3D {
 }
 
 /**
- * 单元日照计算器
+ * 单元日照评估器
  */
 export class UnitSunshineCalculator {
   private calculator: SimpleSunshineCalculator = new SimpleSunshineCalculator();
@@ -128,7 +128,7 @@ export class UnitSunshineCalculator {
     unitData.y = position.y;
     unitData.z = position.z;
     
-    // 使用简单计算器计算日照（使用更大的时间步长以提高速度）
+    // 使用简单评估器计算日照（使用更大的时间步长以提高速度）
     const inputModel = new HouseInputModel();
     inputModel.latitude = latitude;
     inputModel.longitude = longitude;

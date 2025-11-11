@@ -1,5 +1,5 @@
 /**
- * 主页面 - 房屋光照助手
+ * 主页面 - 房屋日照助手
  */
 @Entry
 @Component
@@ -10,7 +10,7 @@ struct Index {
     Column() {
       // 标题
       Row() {
-        Text('房屋光照助手')
+        Text('房屋日照助手')
           .fontSize(28)
           .fontWeight(FontWeight.Bold)
           .fontColor(Color.White)
@@ -28,8 +28,8 @@ struct Index {
             .fontWeight(FontWeight.Medium)
             .margin({ top: 40, bottom: 30 })
 
-        // 基础光照计算器按钮
-        Button('基础光照计算器')
+        // 基础日照评估器按钮
+        Button('基础日照评估器')
           .width('80%')
           .height(60)
           .fontSize(18)
@@ -42,8 +42,8 @@ struct Index {
             });
           })
 
-        // 高级光照计算器按钮
-        Button('高级光照计算器')
+        // 高级日照评估器按钮
+        Button('高级日照评估器')
           .width('80%')
           .height(60)
           .fontSize(18)
@@ -78,25 +78,25 @@ struct Index {
             .fontWeight(FontWeight.Medium)
             .margin({ top: 50, bottom: 20 })
 
-          Text('• 基础光照计算器：')
+          Text('• 基础日照评估器：')
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
             .alignSelf(ItemAlign.Start)
             .margin({ left: 20, bottom: 5 })
 
-          Text('  适用于简单场景,计算单栋建筑遮挡下的房屋光照情况')
+          Text('  适用于简单场景,评估单栋建筑遮挡下的房屋日照情况')
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
             .alignSelf(ItemAlign.Start)
             .margin({ left: 20, bottom: 15 })
 
-          Text('• 高级光照计算器:')
+          Text('• 高级日照评估器:')
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
             .alignSelf(ItemAlign.Start)
             .margin({ left: 20, bottom: 5 })
 
-          Text('  支持多建筑物布局,提供2D图和详细的单元光照分析')
+          Text('  支持多建筑物布局,提供2D图和详细的单元日照分析')
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
             .alignSelf(ItemAlign.Start)
