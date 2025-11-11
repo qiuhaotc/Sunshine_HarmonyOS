@@ -8,30 +8,19 @@ import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
 import { SunshineRatingSystem, RatingResult, SpecialDays } from '../utils/SunshineRatingSystem';
 import { SunshineRatingCard } from '../components/SunshineRatingCard';
+import { HistoryManager, AdvancedHistoryItem, BuildingJSON } from '../utils/HistoryManager';
+import { AdvancedHistoryDialog } from '../components/AdvancedHistoryDialog';
+import { SaveHistoryDialog } from '../components/SaveHistoryDialog';
 import preferences from '@ohos.data.preferences';
 import fs from '@ohos.file.fs';
 import picker from '@ohos.file.picker';
+import promptAction from '@ohos.promptAction';
 
 /**
  * 下拉选项类型
  */
 interface SelectOption {
   value: string;
-}
-
-/**
- * 建筑数据JSON格式
- */
-interface BuildingJSON {
-  id: number;
-  width: number;
-  length: number;
-  height: number;
-  floorHeight: number;
-  units: number;
-  rotationDeg: number;
-  x: number;
-  y: number;
 }
 
 /**
@@ -92,6 +81,10 @@ struct AdvancedCalculatorPage {
   @State selectedCity: string = '请选择城市';
   @State cities: CityModel[] = [];
   private cityDialogController: CustomDialogController | null = null;
+  
+  // 历史记录
+  private historyDialogController: CustomDialogController | null = null;
+  private saveHistoryDialogController: CustomDialogController | null = null;
   
   // 单元日照数据(用于3D视图和表格)
   @State unitSunshineData: UnitSunshineData[] = [];
@@ -271,6 +264,191 @@ struct AdvancedCalculatorPage {
   }
   
   /**
+   * 显示历史记录对话框
+   */
+  private showHistoryDialog() {
+    if (!this.historyDialogController) {
+      this.historyDialogController = new CustomDialogController({
+        builder: AdvancedHistoryDialog({
+          onLoad: (item: AdvancedHistoryItem) => {
+            this.loadHistoryItem(item);
+            this.historyDialogController?.close();
+          },
+          onClose: () => {
+            this.historyDialogController?.close();
+          }
+        }),
+        autoCancel: true,
+        alignment: DialogAlignment.Center,
+        customStyle: true
+      });
+    }
+    this.historyDialogController.open();
+  }
+
+  /**
+   * 显示保存历史记录对话框
+   */
+  private showSaveHistoryDialog() {
+    if (!this.saveHistoryDialogController) {
+      this.saveHistoryDialogController = new CustomDialogController({
+        builder: SaveHistoryDialog({
+          onSave: (name: string) => {
+            this.saveHistory(name);
+            this.saveHistoryDialogController?.close();
+          },
+          onClose: () => {
+            this.saveHistoryDialogController?.close();
+          }
+        }),
+        autoCancel: true,
+        alignment: DialogAlignment.Center,
+        customStyle: true
+      });
+    }
+    this.saveHistoryDialogController.open();
+  }
+
+  /**
+   * 从历史记录加载场景
+   */
+  private loadHistoryItem(item: AdvancedHistoryItem) {
+    try {
+      // 恢复经纬度和比例尺
+      this.latitude = item.latitude;
+      this.longitude = item.longitude;
+      this.scaleMetersPerCell = item.scaleMetersPerCell;
+      
+      // 恢复城市名称
+      const matchedCity = this.cities.find(city => city.getDisplayName() === item.cityName);
+      if (matchedCity) {
+        this.selectedCity = item.cityName;
+      }
+      
+      // 恢复建筑物
+      this.buildings = item.buildings.map((buildingJSON: BuildingJSON): BuildingModel => {
+        const building = new BuildingModel();
+        building.id = buildingJSON.id;
+        building.width = buildingJSON.width;
+        building.length = buildingJSON.length;
+        building.height = buildingJSON.height;
+        building.floorHeight = buildingJSON.floorHeight;
+        building.units = buildingJSON.units;
+        building.rotationDeg = buildingJSON.rotationDeg;
+        building.x = buildingJSON.x;
+        building.y = buildingJSON.y;
+        return building;
+      });
+      
+      // 更新 nextBuildingId
+      if (this.buildings.length > 0) {
+        const maxId = Math.max(...this.buildings.map(b => b.id));
+        this.nextBuildingId = maxId + 1;
+      } else {
+        this.nextBuildingId = 1;
+      }
+      
+      // 重绘画布
+      this.redraw();
+      
+      // 如果有计算结果,恢复计算目标
+      if (item.hasResult && item.targetBuildingId !== undefined) {
+        this.targetBuildingId = item.targetBuildingId;
+        this.targetFloor = item.targetFloor || 1;
+        this.targetUnit = item.targetUnit || 1;
+        
+        // 可以选择自动重新计算,或显示提示
+        promptAction.showToast({
+          message: '场景已加载,可重新计算查看结果',
+          duration: 2000
+        });
+      } else {
+        promptAction.showToast({
+          message: '场景加载成功',
+          duration: 1500
+        });
+      }
+      
+      console.info('历史记录加载成功:', item.name);
+    } catch (error) {
+      console.error('加载历史记录失败:', error);
+      promptAction.showToast({
+        message: '加载失败,请重试',
+        duration: 2000
+      });
+    }
+  }
+
+  /**
+   * 保存当前场景到历史记录
+   */
+  private async saveHistory(name: string) {
+    try {
+      // 序列化建筑物
+      const buildingsJSON: BuildingJSON[] = this.buildings.map((building): BuildingJSON => {
+        return {
+          id: building.id,
+          width: building.width,
+          length: building.length,
+          height: building.height,
+          floorHeight: building.floorHeight,
+          units: building.units,
+          rotationDeg: building.rotationDeg,
+          x: building.x,
+          y: building.y
+        };
+      });
+      
+      // 创建历史记录项
+      const historyItem: AdvancedHistoryItem = {
+        id: Date.now().toString(),
+        timestamp: Date.now(),
+        name: name,
+        cityName: this.selectedCity,
+        latitude: this.latitude,
+        longitude: this.longitude,
+        scaleMetersPerCell: this.scaleMetersPerCell,
+        buildingCount: this.buildings.length,
+        buildings: buildingsJSON
+      };
+      
+      // 如果有计算结果,一并保存
+      if (this.showResult && this.calculationResult && this.ratingResult) {
+        historyItem.hasResult = true;
+        historyItem.targetBuildingId = this.targetBuildingId;
+        historyItem.targetFloor = this.targetFloor;
+        historyItem.targetUnit = this.targetUnit;
+        historyItem.totalSunshine = this.calculationResult.annualAverage;
+        historyItem.winterSolsticeSunshine = this.calculationResult.winterSolstice;
+        historyItem.greatColdSunshine = this.calculationResult.greatCold;
+        historyItem.score = this.ratingResult.score;
+      }
+      
+      // 获取 context
+      const context = this.getUIContext()?.getHostContext();
+      if (!context) {
+        throw new Error('无法获取应用上下文');
+      }
+      
+      // 保存到 HistoryManager
+      await HistoryManager.saveAdvancedHistory(context, historyItem);
+      
+      promptAction.showToast({
+        message: '保存成功',
+        duration: 1500
+      });
+      
+      console.info('历史记录保存成功:', name);
+    } catch (error) {
+      console.error('保存历史记录失败:', error);
+      promptAction.showToast({
+        message: '保存失败,请重试',
+        duration: 2000
+      });
+    }
+  }
+  
+  /**
    * 检测屏幕尺寸
    */
   private checkScreenSize() {
@@ -329,6 +507,19 @@ struct AdvancedCalculatorPage {
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
             .margin({ right: 48 })
+          
+          // 历史记录按钮
+          Button() {
+            Text('📋')
+              .fontSize(20)
+              .fontColor(Color.White)
+          }
+          .type(ButtonType.Normal)
+          .backgroundColor(Color.Transparent)
+          .onClick(() => {
+            this.showHistoryDialog();
+          })
+          .margin({ right: 8 })
           
           // 小屏幕时显示切换按钮
           if (this.isSmallScreen) {
@@ -1082,6 +1273,16 @@ struct AdvancedCalculatorPage {
         .backgroundColor($r('app.color.input_background'))
         .borderRadius(8)
       }
+      
+      // 保存到历史记录按钮
+      Button('保存场景')
+        .width('100%')
+        .height(40)
+        .margin({ top: 15 })
+        .backgroundColor('#4CAF50')
+        .onClick(() => {
+          this.showSaveHistoryDialog();
+        })
     }
     .width('100%')
   }

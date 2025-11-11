@@ -5,9 +5,13 @@ import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
 import { SunshineRatingSystem, RatingResult } from '../utils/SunshineRatingSystem';
 import { SunshineRatingCard } from '../components/SunshineRatingCard';
+import { HistoryManager, SimpleHistoryItem } from '../utils/HistoryManager';
+import { SimpleHistoryDialog } from '../components/SimpleHistoryDialog';
+import { SaveHistoryDialog } from '../components/SaveHistoryDialog';
 import router from '@ohos.router';
 import window from '@ohos.window';
 import { BusinessError } from '@ohos.base';
+import promptAction from '@ohos.promptAction';
 
 /**
  * 简单日照评估器页面
@@ -39,6 +43,8 @@ struct SimpleCalculatorPage {
   @State isTablet: boolean = false;
   
   private cityDialogController: CustomDialogController | null = null;
+  private historyDialogController: CustomDialogController | null = null;
+  private saveHistoryDialogController: CustomDialogController | null = null;
   private calculator: SimpleSunshineCalculator = new SimpleSunshineCalculator();
   private windowSizeChangeCallback: ((size: window.Size) => void) | null = null;
 
@@ -173,7 +179,20 @@ struct SimpleCalculatorPage {
             .fontColor(Color.White)
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
-            .margin({ right: 48 })
+          
+          // 历史记录按钮
+          Button() {
+            Text('📋')
+              .fontSize(20)
+          }
+          .type(ButtonType.Normal)
+          .backgroundColor(Color.Transparent)
+          .width(40)
+          .height(40)
+          .onClick(() => {
+            this.showHistoryDialog();
+          })
+          .margin({ right: 8 })
         }
         .width('100%')
         .height(56)
@@ -604,6 +623,16 @@ struct SimpleCalculatorPage {
       .backgroundColor(this.calculator.validateSunshineResult(this.result) ? 
         $r('app.color.success_background') : $r('app.color.error_background'))
       .borderRadius(10)
+      
+      // 保存历史记录按钮
+      Button('保存到历史记录')
+        .width('100%')
+        .margin({ top: 20 })
+        .backgroundColor('#007DFF')
+        .fontColor(Color.White)
+        .onClick(() => {
+          this.showSaveHistoryDialog();
+        })
     }
     .width('100%')
   }
@@ -700,6 +729,124 @@ struct SimpleCalculatorPage {
         this.calculating = false;
       }
     }, 100);
+  }
+
+  // 显示历史记录对话框
+  private showHistoryDialog() {
+    if (!this.historyDialogController) {
+      this.historyDialogController = new CustomDialogController({
+        builder: SimpleHistoryDialog({
+          onLoad: (item: SimpleHistoryItem) => {
+            this.loadHistoryItem(item);
+          },
+          onClose: () => {
+            this.historyDialogController?.close();
+          }
+        }),
+        autoCancel: true,
+        alignment: DialogAlignment.Center,
+        customStyle: true
+      });
+    }
+    this.historyDialogController.open();
+  }
+
+  // 加载历史记录项
+  private async loadHistoryItem(item: SimpleHistoryItem) {
+    // 关闭历史对话框
+    this.historyDialogController?.close();
+    
+    // 恢复所有输入参数
+    this.inputModel.blockLevel = item.blockLevel;
+    this.inputModel.blockLevelHeight = item.blockLevelHeight;
+    this.inputModel.distance = item.distance;
+    this.inputModel.latitude = item.latitude;
+    this.inputModel.level = item.level;
+    this.inputModel.levelHeight = item.levelHeight;
+    this.inputModel.longitude = item.longitude;
+    this.inputModel.timeZone = item.timeZone;
+    this.inputModel.year = item.year;
+    
+    // 更新城市信息
+    const city = this.cities.find(c => c.city === item.cityName);
+    if (city) {
+      this.selectCity(city);
+    }
+    
+    // 更新显示文本
+    this.updateDisplayTexts();
+    
+    // 自动计算
+    this.calculateSunshine();
+  }
+
+  // 保存当前配置为历史记录
+  private showSaveHistoryDialog() {
+    if (!this.saveHistoryDialogController) {
+      this.saveHistoryDialogController = new CustomDialogController({
+        builder: SaveHistoryDialog({
+          onSave: (name: string) => {
+            this.saveHistory(name);
+          },
+          onClose: () => {
+            this.saveHistoryDialogController?.close();
+          }
+        }),
+        autoCancel: true,
+        alignment: DialogAlignment.Center,
+        customStyle: true
+      });
+    }
+    this.saveHistoryDialogController.open();
+  }
+
+  // 执行保存历史记录
+  private async saveHistory(name: string) {
+    // 关闭保存对话框
+    this.saveHistoryDialogController?.close();
+    
+    // 确保有计算结果
+    if (!this.showResult) {
+      // 提示用户先进行计算
+      promptAction.showToast({ message: '请先进行日照计算后再保存' });
+      return;
+    }
+    
+    // 获取城市名称
+    let cityName = '未知';
+    const city = this.cities.find(c => parseFloat(c.lng) === this.inputModel.longitude && parseFloat(c.lat) === this.inputModel.latitude);
+    if (city) {
+      cityName = city.city;
+    }
+    
+    // 构建历史记录项
+    const historyItem: SimpleHistoryItem = {
+      id: Date.now().toString(),
+      name: name || `记录-${new Date().toLocaleString('zh-CN')}`,
+      timestamp: Date.now(),
+      cityName: cityName,
+      blockLevel: this.inputModel.blockLevel,
+      blockLevelHeight: this.inputModel.blockLevelHeight,
+      distance: this.inputModel.distance,
+      latitude: this.inputModel.latitude,
+      level: this.inputModel.level,
+      levelHeight: this.inputModel.levelHeight,
+      longitude: this.inputModel.longitude,
+      timeZone: this.inputModel.timeZone,
+      year: this.inputModel.year,
+      totalSunshine: this.result.exactSunshineTime / 60, // 转为小时
+      winterSolsticeSunshine: this.result.winterSolstice / 60,
+      greatColdSunshine: this.result.greatCold / 60,
+      averageDailySunshine: this.result.exactSunshineTime / 60 / 365,
+      score: this.ratingResult?.score || 0
+    };
+    
+    // 保存到历史记录
+    const context = getContext(this) as Context;
+    await HistoryManager.saveSimpleHistory(context, historyItem);
+    
+    // 显示成功提示
+    promptAction.showToast({ message: '历史记录已保存' });
   }
 
   /**
