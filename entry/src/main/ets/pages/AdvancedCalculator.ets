@@ -8,6 +8,7 @@ import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
 import { SunshineRatingSystem, RatingResult, SpecialDays } from '../utils/SunshineRatingSystem';
 import { SunshineRatingCard } from '../components/SunshineRatingCard';
+import { SunshineCharts } from '../components/SunshineCharts';
 import { HistoryManager, AdvancedHistoryItem, BuildingJSON } from '../utils/HistoryManager';
 import { AdvancedHistoryDialog } from '../components/AdvancedHistoryDialog';
 import { SaveHistoryDialog } from '../components/SaveHistoryDialog';
@@ -1272,6 +1273,10 @@ struct AdvancedCalculatorPage {
         .padding(10)
         .backgroundColor($r('app.color.input_background'))
         .borderRadius(8)
+        
+        // 日照时间可视化图表
+        SunshineCharts({ calculationResult: this.calculationResult })
+          .margin({ top: 15 })
       }
       
       // 保存到历史记录按钮

@@ -5,6 +5,7 @@ import { CityModel } from '../model/CityModel';
 import { CityDataService } from '../utils/CityDataService';
 import { SunshineRatingSystem, RatingResult } from '../utils/SunshineRatingSystem';
 import { SunshineRatingCard } from '../components/SunshineRatingCard';
+import { SimpleSunshineCharts } from '../components/SimpleSunshineCharts';
 import { HistoryManager, SimpleHistoryItem } from '../utils/HistoryManager';
 import { SimpleHistoryDialog } from '../components/SimpleHistoryDialog';
 import { SaveHistoryDialog } from '../components/SaveHistoryDialog';
@@ -610,6 +611,9 @@ struct SimpleCalculatorPage {
       .padding(15)
       .backgroundColor($r('app.color.card_background'))
       .borderRadius(10)
+
+      // 日照时间可视化图表
+      SimpleSunshineCharts({ result: this.result })
 
       // 验证结果
       Row() {
